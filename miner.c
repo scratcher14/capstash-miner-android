@@ -68,19 +68,6 @@ typedef struct {
 static void set_thread_affinity(int thread_id) {
     (void)thread_id; // Not supported in Termux/Android
 }
-#ifdef __linux__
-    int cores = get_nprocs();
-    if (cores <= 0) return;
-    cpu_set_t cpuset;
-    CPU_ZERO(&cpuset);
-    // Pin to physical core (skip hyperthreads by using modulo physical count)
-    int core = thread_id % (cores / 2 > 0 ? cores / 2 : 1);
-    CPU_SET(core, &cpuset);
-    pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
-#else
-    (void)thread_id; // Not supported on macOS/Windows without extra libs
-#endif
-}
 
 // ── Address decode helpers ────────────────────────────────────────────────
 static const char BECH32_CHARSET[] = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
